@@ -66,8 +66,8 @@ export default function MapsSection({
         if (cancelled || !ref.current || !window.google) return;
 
         const map = new window.google.maps.Map(ref.current, {
-          center: { lat: 48.5, lng: 2.0 },
-          zoom: 4,
+          center: { lat: 51.5, lng: -0.2 },
+          zoom: 10,
           styles: DARK_STYLE,
           disableDefaultUI: true,
           zoomControl: true,
@@ -100,6 +100,17 @@ export default function MapsSection({
           new window.markerClusterer.MarkerClusterer({ map, markers });
         } else {
           markers.forEach((m: any) => m.setMap(map));
+        }
+
+        // Auto-frame all pins.
+        const bounds = new window.google.maps.LatLngBounds();
+        data.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
+        if (!bounds.isEmpty()) {
+          map.fitBounds(bounds, 64);
+          const once = window.google.maps.event.addListenerOnce(map, "idle", () => {
+            if (map.getZoom() > 13) map.setZoom(13); // don't over-zoom on a tight cluster
+          });
+          void once;
         }
 
         setStatus("ready");

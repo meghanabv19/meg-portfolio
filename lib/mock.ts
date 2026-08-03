@@ -106,12 +106,13 @@ export const mockHackerRankBadges: HackerRankBadge[] = [
 ];
 
 export const mockTouristPlaces: TouristPlace[] = [
-  { place_name: "Tower of London", city: "London", country: "UK", lat: 51.5081, lng: -0.0759, category: "LANDMARK", first_visited: daysAgo(120) },
-  { place_name: "British Museum", city: "London", country: "UK", lat: 51.5194, lng: -0.1270, category: "MUSEUM", first_visited: daysAgo(200) },
-  { place_name: "Hyde Park", city: "London", country: "UK", lat: 51.5073, lng: -0.1657, category: "PARK", first_visited: daysAgo(90) },
-  { place_name: "Edinburgh Castle", city: "Edinburgh", country: "UK", lat: 55.9486, lng: -3.1999, category: "LANDMARK", first_visited: daysAgo(310) },
-  { place_name: "Roman Baths", city: "Bath", country: "UK", lat: 51.3811, lng: -2.3590, category: "TOURIST_ATTRACTION", first_visited: daysAgo(260) },
-  { place_name: "Sagrada Família", city: "Barcelona", country: "Spain", lat: 41.4036, lng: 2.1744, category: "LANDMARK", first_visited: daysAgo(410) },
+  { place_name: "London Bridge", city: "London", country: "UK", lat: 51.5079, lng: -0.0877, category: "LANDMARK", first_visited: "2026-07-24" },
+  { place_name: "Big Ben", city: "London", country: "UK", lat: 51.5007, lng: -0.1246, category: "LANDMARK", first_visited: "2026-07-24" },
+  { place_name: "St James's Park", city: "London", country: "UK", lat: 51.5027, lng: -0.1340, category: "PARK", first_visited: "2026-07-24" },
+  { place_name: "Chinatown", city: "London", country: "UK", lat: 51.5116, lng: -0.1307, category: "TOURIST_ATTRACTION", first_visited: "2026-07-25" },
+  { place_name: "Windsor Castle", city: "Windsor", country: "UK", lat: 51.4839, lng: -0.6044, category: "LANDMARK", first_visited: "2026-07-26" },
+  { place_name: "Cannizaro Park", city: "London", country: "UK", lat: 51.4230, lng: -0.2360, category: "PARK", first_visited: "2026-08-01" },
+  { place_name: "Wimbledon", city: "London", country: "UK", lat: 51.4340, lng: -0.2140, category: "TOURIST_ATTRACTION", first_visited: "2026-08-01" },
 ];
 
 export const MOCK_SYNCED_AT = now();
