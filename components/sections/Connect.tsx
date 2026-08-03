@@ -3,7 +3,14 @@
 import { SectionHeader } from "../ui";
 import { profile } from "@/lib/profile";
 
-export default function Connect({ calendarUrl }: { calendarUrl: string }) {
+export default function Connect({
+  calendarUrl,
+  bookingUrl,
+}: {
+  calendarUrl: string;
+  bookingUrl?: string;
+}) {
+  const bookHref = bookingUrl || calendarUrl;
   return (
     <section>
       <SectionHeader
@@ -34,9 +41,9 @@ export default function Connect({ calendarUrl }: { calendarUrl: string }) {
           >
             in LinkedIn ↗
           </a>
-          {calendarUrl && (
+          {bookHref && (
             <a
-              href={calendarUrl}
+              href={bookHref}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded border border-accent bg-accent/10 px-4 py-2 text-sm text-accent transition-colors hover:bg-accent/20"

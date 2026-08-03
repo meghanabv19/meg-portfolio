@@ -107,7 +107,7 @@ export default function CodingSection({
           profile ↗
         </a>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="mt-3 grid grid-cols-2 gap-4">
         <div className="panel p-4">
           <div className="label">contributions / yr</div>
           <div className="mt-1 text-2xl font-bold text-accent">{gh.data.contributions}</div>
@@ -115,10 +115,6 @@ export default function CodingSection({
         <div className="panel p-4">
           <div className="label">public repos</div>
           <div className="mt-1 text-2xl font-bold">{gh.data.public_repos}</div>
-        </div>
-        <div className="panel p-4">
-          <div className="label">top language</div>
-          <div className="mt-1 text-2xl font-bold text-cyan">{gh.data.top_language ?? "—"}</div>
         </div>
       </div>
 

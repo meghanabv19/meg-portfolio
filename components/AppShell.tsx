@@ -32,6 +32,7 @@ export interface SiteData {
   places: Wrapped<TouristPlace[]>;
   mapsKey: string;
   calendarUrl: string;
+  bookingUrl: string;
   repoUrl: string;
 }
 
@@ -98,7 +99,9 @@ export default function AppShell({ data }: { data: SiteData }) {
             )}
             {active === "personal" && <Personal books={data.books} />}
             {active === "maps" && <MapsSection places={data.places} apiKey={data.mapsKey} />}
-            {active === "connect" && <Connect calendarUrl={data.calendarUrl} />}
+            {active === "connect" && (
+              <Connect calendarUrl={data.calendarUrl} bookingUrl={data.bookingUrl} />
+            )}
             {active === "architecture" && <Architecture repoUrl={data.repoUrl} />}
           </div>
 

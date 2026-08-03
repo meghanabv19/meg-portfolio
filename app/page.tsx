@@ -34,7 +34,11 @@ export default async function Page() {
     books,
     places,
     mapsKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
-    calendarUrl: process.env.NEXT_PUBLIC_CALENDAR_URL ?? "",
+    // Public Google Calendar appointment-schedule embed (gv=true variant is iframe-safe).
+    calendarUrl:
+      process.env.NEXT_PUBLIC_CALENDAR_URL ??
+      "https://calendar.google.com/calendar/appointments/schedules/AcZssZ1SMm2GEOwalJ90bAhvGG_HwEQBg5UOxLHf36UTSoijYfWxxVjHuiC5-PlcOl1ZWIwHpD1IVdrj?gv=true",
+    bookingUrl: "https://calendar.app.google/kt9bd9vebEpvNEcx7",
     repoUrl: process.env.NEXT_PUBLIC_GITHUB_REPO ?? "https://github.com/meghanabv19/meg-portfolio",
   };
 
