@@ -16,3 +16,11 @@ models:
     mart:
       +schema: mart
       +materialized: table
+      # After each mart table is (re)built, restore the read grants + RLS the
+      # site's anon key depends on (dropping/recreating a table drops these).
+      +post-hook:
+        - 'grant usage on schema mart to anon, authenticated'
+        - 'grant select on {{ this }} to anon, authenticated'
+        - 'alter table {{ this }} enable row level security'
+        - 'drop policy if exists "anon read" on {{ this }}'
+        - 'create policy "anon read" on {{ this }} for select to anon, authenticated using (true)'
