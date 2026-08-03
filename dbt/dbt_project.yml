@@ -18,8 +18,10 @@ models:
       +materialized: table
       # After each mart table is (re)built, restore the read grants + RLS the
       # site's anon key depends on (dropping/recreating a table drops these).
+      # Note: schema-level `grant usage on schema mart` lives in schema.sql (it
+      # survives table rebuilds); running it per-model under parallel threads
+      # causes "tuple concurrently updated" on the shared catalog row.
       +post-hook:
-        - 'grant usage on schema mart to anon, authenticated'
         - 'grant select on {{ this }} to anon, authenticated'
         - 'alter table {{ this }} enable row level security'
         - 'drop policy if exists "anon read" on {{ this }}'

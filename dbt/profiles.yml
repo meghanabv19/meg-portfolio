@@ -14,5 +14,5 @@ meg_portfolio:
       password: "{{ env_var('SUPABASE_DB_PASSWORD') }}"
       dbname: "{{ env_var('SUPABASE_DB_NAME', 'postgres') }}"
       schema: public
-      threads: 4
+      threads: 1
       sslmode: require
