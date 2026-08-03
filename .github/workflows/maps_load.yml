@@ -1,0 +1,60 @@
+name: maps_load
+
+# One-time / re-runnable batch load of Google Takeout location history.
+# Manually triggered. The Takeout JSON is provided as an artifact upload or a
+# committed file path — raw location data is NEVER committed to the repo
+# (see .gitignore); only the filtered tourist places reach the database.
+
+on:
+  workflow_dispatch:
+    inputs:
+      takeout_glob:
+        description: "Path/glob to Semantic Location History JSON (uploaded to runner)"
+        required: true
+        default: "data/raw/**/*.json"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install deps
+        run: |
+          pip install -r pipelines/requirements.txt
+          pip install dbt-postgres==1.8.2
+
+      - name: Download Takeout artifact (if provided)
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: takeout
+          path: data/raw
+
+      - name: Load tourist places
+        working-directory: pipelines
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python load_google_maps.py "../${{ inputs.takeout_glob }}"
+
+      - name: dbt build (tourist places)
+        working-directory: dbt
+        env:
+          SUPABASE_DB_HOST: ${{ secrets.SUPABASE_DB_HOST }}
+          SUPABASE_DB_PORT: ${{ secrets.SUPABASE_DB_PORT }}
+          SUPABASE_DB_USER: ${{ secrets.SUPABASE_DB_USER }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_DB_NAME: ${{ secrets.SUPABASE_DB_NAME }}
+        run: |
+          dbt deps
+          dbt build --profiles-dir . --select stg_location_visits+
+
+      - name: Report
+        if: always()
+        run: echo "maps_load finished with status=${{ job.status }}"

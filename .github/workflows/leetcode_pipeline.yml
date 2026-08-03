@@ -1,0 +1,58 @@
+name: leetcode_pipeline
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # daily at midnight UTC
+  workflow_dispatch:
+
+concurrency:
+  group: leetcode
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install deps
+        run: |
+          pip install -r pipelines/requirements.txt
+          pip install dbt-postgres==1.8.2
+
+      - name: Extract LeetCode
+        working-directory: pipelines
+        env:
+          LEETCODE_USERNAME: ${{ secrets.LEETCODE_USERNAME }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python extract_leetcode.py
+
+      - name: Extract HackerRank
+        working-directory: pipelines
+        env:
+          HACKERRANK_USERNAME: ${{ secrets.HACKERRANK_USERNAME }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python extract_hackerrank.py
+
+      - name: dbt build (coding models)
+        working-directory: dbt
+        env:
+          SUPABASE_DB_HOST: ${{ secrets.SUPABASE_DB_HOST }}
+          SUPABASE_DB_PORT: ${{ secrets.SUPABASE_DB_PORT }}
+          SUPABASE_DB_USER: ${{ secrets.SUPABASE_DB_USER }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_DB_NAME: ${{ secrets.SUPABASE_DB_NAME }}
+        run: |
+          dbt deps
+          dbt build --profiles-dir . --select stg_leetcode_stats+ stg_hackerrank_badges+
+
+      - name: Report
+        if: always()
+        run: echo "leetcode_pipeline finished with status=${{ job.status }}"

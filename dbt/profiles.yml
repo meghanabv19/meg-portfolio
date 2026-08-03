@@ -1,0 +1,18 @@
+# dbt connection profile. In GitHub Actions these come from secrets.
+# Locally, export the same env vars or copy to ~/.dbt/profiles.yml.
+#
+# Note: custom schema names (staging/mart) combine with the target schema by
+# default. We override generate_schema_name (see macros/) so `mart` == `mart`.
+meg_portfolio:
+  target: prod
+  outputs:
+    prod:
+      type: postgres
+      host: "{{ env_var('SUPABASE_DB_HOST') }}"
+      port: "{{ env_var('SUPABASE_DB_PORT', '5432') | int }}"
+      user: "{{ env_var('SUPABASE_DB_USER') }}"
+      password: "{{ env_var('SUPABASE_DB_PASSWORD') }}"
+      dbname: "{{ env_var('SUPABASE_DB_NAME', 'postgres') }}"
+      schema: public
+      threads: 4
+      sslmode: require

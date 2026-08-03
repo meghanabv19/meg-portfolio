@@ -1,0 +1,18 @@
+name: "meg_portfolio"
+version: "26.7.0"
+config-version: 2
+
+profile: "meg_portfolio"
+
+model-paths: ["models"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  meg_portfolio:
+    staging:
+      +schema: staging
+      +materialized: view
+    mart:
+      +schema: mart
+      +materialized: table
