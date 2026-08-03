@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <rect width="100" height="100" rx="22" fill="#0a0a0b"/>
+  <rect x="1.5" y="1.5" width="97" height="97" rx="20.5" fill="none" stroke="#1e1e22" stroke-width="3"/>
+  <!-- terminal prompt chevron -->
+  <polyline points="30,34 50,50 30,66" fill="none" stroke="#3ddc84" stroke-width="10"
+            stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- blinking cursor block -->
+  <rect x="56" y="58" width="18" height="11" rx="2" fill="#3ddc84"/>
+</svg>
