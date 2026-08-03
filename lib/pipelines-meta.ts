@@ -13,24 +13,6 @@ export interface SourceRow {
 
 export const dataSources: SourceRow[] = [
   {
-    source: "Spotify",
-    pipeline: "batch (API pull)",
-    schedule: "every 30 min",
-    rawTable: "raw.spotify_plays",
-    martTable: "mart.spotify_now_playing",
-    cacheTTL: "45 min",
-    fallback: "last cached track (amber)",
-  },
-  {
-    source: "Strava",
-    pipeline: "batch (OAuth API)",
-    schedule: "every 6 hours",
-    rawTable: "raw.strava_activities",
-    martTable: "mart.strava_recent / strava_stats",
-    cacheTTL: "8 hours",
-    fallback: "last activity (amber)",
-  },
-  {
     source: "LeetCode",
     pipeline: "batch (public GraphQL)",
     schedule: "daily @ 00:00 UTC",
@@ -49,6 +31,24 @@ export const dataSources: SourceRow[] = [
     fallback: "last snapshot (amber)",
   },
   {
+    source: "GitHub",
+    pipeline: "batch (REST + GraphQL)",
+    schedule: "daily @ 00:30 UTC",
+    rawTable: "raw.github_stats",
+    martTable: "mart.github_summary / repos",
+    cacheTTL: "36 hours",
+    fallback: "last snapshot (amber)",
+  },
+  {
+    source: "Reading list",
+    pipeline: "manual (curated)",
+    schedule: "on demand",
+    rawTable: "— (hand-edited)",
+    martTable: "mart.books",
+    cacheTTL: "static",
+    fallback: "sample list (amber)",
+  },
+  {
     source: "Google Maps",
     pipeline: "one-time batch (Takeout)",
     schedule: "manual re-run",
@@ -64,9 +64,9 @@ export const pipelineNodes = [
   {
     id: "api",
     label: "Source API",
-    sub: "Spotify · Strava · LeetCode",
+    sub: "LeetCode · HackerRank · GitHub",
     detail:
-      "OAuth 2.0 (Spotify/Strava) or public GraphQL (LeetCode). A refresh token is exchanged for a short-lived access token at runtime — secrets live only in GitHub Actions.",
+      "Public GraphQL (LeetCode/GitHub) and REST (HackerRank/GitHub). No user secrets needed — GitHub Actions provides a token for GitHub's GraphQL; everything else is public.",
   },
   {
     id: "actions",
@@ -115,25 +115,20 @@ export const pipelineNodes = [
     label: "Rendered widget",
     sub: "on this page",
     detail:
-      "What you see — Now Playing, Strava totals, LeetCode stats, tourist map. Freshness is computed from the pipeline's last run timestamp.",
+      "What you see — coding stats, GitHub repos, the tourist map. Freshness is computed from the pipeline's last run timestamp.",
   },
 ];
 
 // dbt test manifest surfaced in the Architecture section.
 export const dbtTests = [
-  { model: "mart_spotify_now_playing", test: "not_null(track_name)", status: "pass" },
-  { model: "mart_spotify_now_playing", test: "not_null(synced_at)", status: "pass" },
-  { model: "mart_spotify_top_tracks", test: "unique(term || rank)", status: "pass" },
-  { model: "mart_spotify_top_tracks", test: "accepted_values(term)", status: "pass" },
-  { model: "mart_spotify_top_artists", test: "not_null(artist_name)", status: "pass" },
-  { model: "mart_strava_recent", test: "unique(activity_id)", status: "pass" },
-  { model: "mart_strava_recent", test: "accepted_values(type)", status: "pass" },
-  { model: "mart_strava_stats", test: "accepted_values(period)", status: "pass" },
   { model: "mart_leetcode_summary", test: "not_null(total_solved)", status: "pass" },
   { model: "mart_leetcode_summary", test: "unique(username || synced_at)", status: "pass" },
   { model: "mart_hackerrank_summary", test: "not_null(username)", status: "pass" },
   { model: "mart_hackerrank_badges", test: "unique(username || badge_name)", status: "pass" },
   { model: "mart_hackerrank_badges", test: "not_null(stars)", status: "pass" },
+  { model: "mart_github_summary", test: "unique(username)", status: "pass" },
+  { model: "mart_github_summary", test: "not_null(public_repos)", status: "pass" },
+  { model: "mart_github_repos", test: "unique(name)", status: "pass" },
   { model: "mart_tourist_places", test: "not_null(lat,lng)", status: "pass" },
   { model: "mart_tourist_places", test: "accepted_values(category)", status: "pass" },
 ] as const;

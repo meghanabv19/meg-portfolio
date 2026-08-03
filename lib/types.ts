@@ -2,53 +2,6 @@
 
 export type Freshness = "fresh" | "cached" | "stale";
 
-export interface NowPlaying {
-  is_playing: boolean;
-  track_name: string;
-  artist_name: string;
-  album_name: string;
-  album_art_url: string | null;
-  track_url: string | null;
-  played_at: string | null; // ISO
-  synced_at: string; // ISO — last pipeline run
-}
-
-export interface TopTrack {
-  rank: number;
-  track_name: string;
-  artist_name: string;
-  album_art_url: string | null;
-  track_url: string | null;
-}
-
-export interface TopArtist {
-  rank: number;
-  artist_name: string;
-  image_url: string | null;
-  genres: string[];
-  artist_url: string | null;
-}
-
-export interface StravaActivity {
-  activity_id: string;
-  name: string;
-  type: string; // Run, Ride, ...
-  distance_km: number;
-  moving_time_s: number;
-  pace_per_km: string | null; // "5:32"
-  elevation_m: number;
-  start_date: string; // ISO
-}
-
-export interface StravaStats {
-  period: "week" | "month";
-  activities: number;
-  distance_km: number;
-  moving_time_s: number;
-  elevation_m: number;
-  synced_at: string;
-}
-
 export interface LeetCodeSummary {
   username: string;
   easy_solved: number;
@@ -82,6 +35,35 @@ export interface HackerRankSummary {
   synced_at: string;
 }
 
+export interface GithubSummary {
+  username: string;
+  name: string | null;
+  public_repos: number;
+  followers: number;
+  contributions: number;
+  top_language: string | null;
+  synced_at: string;
+}
+
+export interface GithubRepo {
+  name: string;
+  description: string | null;
+  language: string | null;
+  stars: number;
+  pushed_at: string;
+  url: string;
+}
+
+export interface Book {
+  id: number;
+  title: string;
+  author: string | null;
+  status: "reading" | "read" | "want";
+  rating: number | null;
+  note: string | null;
+  sort_order: number;
+}
+
 export interface TouristPlace {
   place_name: string;
   city: string;
@@ -90,14 +72,4 @@ export interface TouristPlace {
   lng: number;
   category: string;
   first_visited: string; // ISO date
-}
-
-export interface FeedItem {
-  kind: "music" | "fitness" | "coding";
-  icon: string;
-  source: string;
-  title: string;
-  detail: string;
-  timestamp: string; // ISO
-  freshness: Freshness;
 }

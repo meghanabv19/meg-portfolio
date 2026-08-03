@@ -11,7 +11,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Meghana BV — Data Engineer",
   description:
-    "Personal portfolio + live data platform. Spotify, Strava, LeetCode and travel data, piped end-to-end through GitHub Actions → Supabase → dbt → Next.js.",
+    "Senior Data Engineer. Personal portfolio + live data platform — LeetCode, HackerRank, GitHub and travel data piped end-to-end through GitHub Actions → Supabase → dbt → Next.js.",
   metadataBase: new URL("https://meghanabv19.github.io"),
   openGraph: {
     title: "Meghana BV — Data Engineer",

@@ -5,10 +5,6 @@ sources:
     schema: raw
     description: "Landing zone written by the Python extraction pipelines."
     tables:
-      - name: spotify_plays
-      - name: spotify_top_tracks
-      - name: spotify_top_artists
-      - name: strava_activities
       - name: leetcode_stats
       - name: hackerrank_badges
       - name: github_stats

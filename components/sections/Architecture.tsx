@@ -100,13 +100,11 @@ export default function Architecture({ repoUrl }: { repoUrl: string }) {
       <h3 className="label mb-4 mt-12">dbt lineage · raw → staging → mart</h3>
       <div className="panel overflow-x-auto p-4">
         <pre className="min-w-[560px] text-xs leading-relaxed text-muted">
-{`  raw.spotify_plays ──▶ stg_spotify_plays ─────▶ mart.spotify_now_playing  ✔ tested
-  raw.spotify_top_tracks ─▶ stg_spotify_top_tracks ─▶ mart.spotify_top_tracks  ✔
-  raw.strava_activities ─▶ stg_strava_activities ─┬▶ mart.strava_recent  ✔
-                                                  └▶ mart.strava_stats   ✔
-  raw.leetcode_stats ───▶ stg_leetcode_stats ───▶ mart.leetcode_summary  ✔
+{`  raw.leetcode_stats ───▶ stg_leetcode_stats ───▶ mart.leetcode_summary  ✔ tested
   raw.hackerrank_badges ─▶ stg_hackerrank_badges ─┬▶ mart.hackerrank_summary  ✔
                                                   └▶ mart.hackerrank_badges   ✔
+  raw.github_stats ─────▶ stg_github ────────────┬▶ mart.github_summary  ✔
+                                                 └▶ mart.github_repos    ✔
   raw.location_visits ──▶ stg_location_visits ──▶ mart.tourist_places  ✔`}
         </pre>
       </div>
@@ -115,10 +113,9 @@ export default function Architecture({ repoUrl }: { repoUrl: string }) {
       <h3 className="label mb-4 mt-12">github actions · scheduled runs</h3>
       <div className="panel divide-y divide-border/50">
         {[
-          { wf: "spotify_pipeline.yml", when: "every 30 min", last: "3m ago", ok: true },
-          { wf: "strava_pipeline.yml", when: "every 6 hours", last: "2h ago", ok: true },
           { wf: "leetcode_pipeline.yml", when: "daily 00:00 UTC", last: "6h ago", ok: true },
-          { wf: "maps_load.yml", when: "manual", last: "14d ago", ok: true },
+          { wf: "github_pipeline.yml", when: "daily 00:30 UTC", last: "6h ago", ok: true },
+          { wf: "maps_load.yml", when: "manual", last: "on demand", ok: true },
         ].map((run) => (
           <div key={run.wf} className="flex items-center gap-3 px-4 py-2.5 text-xs">
             <span className={`h-2 w-2 rounded-full ${run.ok ? "bg-accent" : "bg-red"}`} />
@@ -162,8 +159,9 @@ export default function Architecture({ repoUrl }: { repoUrl: string }) {
       <h3 className="label mb-4 mt-12">honest limitations</h3>
       <div className="panel space-y-2 border-amber/30 p-4 text-xs text-muted">
         <p>
-          <span className="text-amber">›</span> Strava data is sparse — I recently migrated from
-          Cult.fit, so the totals are still building up.
+          <span className="text-amber">›</span> My GitHub is modest by design — I&apos;m building in
+          public and the contribution graph is filling up as I go. The repos show the direction of
+          travel more than the volume.
         </p>
         <p>
           <span className="text-amber">›</span> Google Maps data is filtered to tourist places only

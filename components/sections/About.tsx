@@ -1,6 +1,7 @@
 "use client";
 
 import { SectionHeader, Stat } from "../ui";
+import MigrationFlow from "../MigrationFlow";
 import {
   profile,
   experience,
@@ -14,7 +15,7 @@ export default function About() {
   return (
     <section>
       <SectionHeader
-        title="whoami"
+        title="about me"
         subtitle={`${profile.role} · ${profile.focus} · ${profile.location}`}
         right={
           <a
@@ -37,6 +38,14 @@ export default function About() {
           <Stat key={m.label} value={m.value} label={m.label} accent="accent" />
         ))}
       </div>
+
+      {/* what I do — migration architecture */}
+      <h3 className="label mt-12 mb-2">what i do · enterprise data migration</h3>
+      <p className="mb-4 max-w-2xl text-xs text-muted">
+        End-to-end SAP data migration: I move millions of records from legacy systems into S/4HANA
+        without surprises. Click through the stages to see how.
+      </p>
+      <MigrationFlow />
 
       {/* experience */}
       <h3 className="label mt-12 mb-4">experience</h3>

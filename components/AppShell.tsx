@@ -4,51 +4,44 @@ import { useCallback, useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 import Splash from "./Splash";
-import Home from "./sections/Home";
 import About from "./sections/About";
-import SpotifySection from "./sections/Spotify";
-import StravaSection from "./sections/Strava";
 import CodingSection from "./sections/Coding";
+import Personal from "./sections/Personal";
 import MapsSection from "./sections/Maps";
+import Connect from "./sections/Connect";
 import Architecture from "./sections/Architecture";
 import type {
-  FeedItem,
-  NowPlaying,
-  TopTrack,
-  TopArtist,
-  StravaActivity,
-  StravaStats,
   LeetCodeSummary,
   HackerRankSummary,
   HackerRankBadge,
+  GithubSummary,
+  GithubRepo,
+  Book,
   TouristPlace,
 } from "@/lib/types";
 
 type Wrapped<T> = { data: T; usedFallback: boolean };
 
 export interface SiteData {
-  feed: FeedItem[];
-  nowPlaying: Wrapped<NowPlaying>;
-  topTracks: Wrapped<TopTrack[]>;
-  topArtists: Wrapped<TopArtist[]>;
-  stravaRecent: Wrapped<StravaActivity[]>;
-  stravaStats: Wrapped<StravaStats[]>;
   leetcode: Wrapped<LeetCodeSummary>;
   hackerrank: Wrapped<HackerRankSummary>;
   hackerrankBadges: Wrapped<HackerRankBadge[]>;
+  github: Wrapped<GithubSummary>;
+  githubRepos: Wrapped<GithubRepo[]>;
+  books: Wrapped<Book[]>;
   places: Wrapped<TouristPlace[]>;
   mapsKey: string;
+  calendarUrl: string;
   repoUrl: string;
 }
 
 export const SECTIONS = [
-  { id: "about", label: "About", hint: "start here" },
-  { id: "home", label: "Activity", hint: "live feed" },
-  { id: "spotify", label: "Spotify", hint: "now playing" },
-  { id: "strava", label: "Strava", hint: "fitness" },
-  { id: "coding", label: "Coding", hint: "leetcode" },
+  { id: "about", label: "About me", hint: "start here" },
+  { id: "coding", label: "Coding", hint: "leetcode · hackerrank · github" },
+  { id: "personal", label: "Personal", hint: "reading · running · hiking" },
   { id: "maps", label: "Maps", hint: "travel" },
-  { id: "architecture", label: "Architecture", hint: "how it works" },
+  { id: "connect", label: "Connect", hint: "let's talk" },
+  { id: "architecture", label: "Architecture", hint: "how this works" },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]["id"];
@@ -76,7 +69,7 @@ export default function AppShell({ data }: { data: SiteData }) {
       } else if (e.key === "ArrowUp" || e.key === "k") {
         e.preventDefault();
         go(-1);
-      } else if (/^[1-7]$/.test(e.key)) {
+      } else if (/^[1-6]$/.test(e.key)) {
         setActive(SECTIONS[Number(e.key) - 1].id);
       }
     };
@@ -93,31 +86,24 @@ export default function AppShell({ data }: { data: SiteData }) {
         <div className="mx-auto max-w-4xl">
           <MobileNav active={active} onSelect={setActive} />
           <div key={active} className="animate-fadeUp">
-            {active === "home" && <Home feed={data.feed} />}
             {active === "about" && <About />}
-            {active === "spotify" && (
-              <SpotifySection
-                nowPlaying={data.nowPlaying}
-                topTracks={data.topTracks}
-                topArtists={data.topArtists}
-              />
-            )}
-            {active === "strava" && (
-              <StravaSection recent={data.stravaRecent} stats={data.stravaStats} />
-            )}
             {active === "coding" && (
               <CodingSection
                 lc={data.leetcode}
                 hr={data.hackerrank}
                 hrBadges={data.hackerrankBadges}
+                gh={data.github}
+                repos={data.githubRepos}
               />
             )}
+            {active === "personal" && <Personal books={data.books} />}
             {active === "maps" && <MapsSection places={data.places} apiKey={data.mapsKey} />}
+            {active === "connect" && <Connect calendarUrl={data.calendarUrl} />}
             {active === "architecture" && <Architecture repoUrl={data.repoUrl} />}
           </div>
 
           <footer className="mt-16 border-t border-border pt-4 text-[10px] uppercase tracking-[0.2em] text-muted">
-            BUILD 26.07 // CRAFTED BY MEG
+            BUILD 26.08 // CRAFTED BY MEG
           </footer>
         </div>
       </main>

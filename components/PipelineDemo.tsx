@@ -2,53 +2,50 @@
 
 import { useState } from "react";
 
-// Watch a real-shaped Spotify API response transform, step by step, into the
-// rendered Now Playing card. Purely illustrative — same logic as extract_spotify.py
-// + stg_spotify_plays.sql, shown inline.
+// Watch a real-shaped GitHub API response transform, step by step, into the
+// rendered repo card. Same logic as extract_github.py + stg_github.sql +
+// mart_github_repos.sql, shown inline.
 
 const RAW = `{
-  "item": {
-    "name": "Midnight City",
-    "artists": [{ "name": "M83" }],
-    "album": {
-      "name": "Hurry Up, We're Dreaming",
-      "images": [{ "url": "https://i.scdn.co/image/ab67..." }]
-    },
-    "external_urls": { "spotify": "https://open.spotify.com/track/1eyz..." }
-  },
-  "is_playing": false,
-  "progress_ms": 0,
-  "timestamp": 1753900000000
+  "name": "SQL-Challenges-and-learning",
+  "description": "SQL practice & solutions",
+  "language": "TSQL",
+  "stargazers_count": 0,
+  "fork": false,
+  "pushed_at": "2026-07-27T09:14:03Z",
+  "html_url": "https://github.com/meghanabv19/SQL-Challenges-and-learning"
 }`;
 
-const RAW_ROW = `-- raw.spotify_plays  (landed as-is, JSONB)
-{ "item": { "name": "Midnight City", ... }, "is_playing": false, ... }`;
+const RAW_ROW = `-- raw.github_stats  (landed as-is, JSONB)
+{ "profile": {...}, "repos": [ { "name": "SQL-Challenges-...", ... }, ... ],
+  "total_contributions": 96 }`;
 
-const STAGING = `-- stg_spotify_plays.sql
+const STAGING = `-- mart_github_repos.sql  (explode + type the repos array)
 select
-  payload->'item'->>'name'                      as track_name,
-  payload->'item'->'artists'->0->>'name'        as artist_name,
-  payload->'item'->'album'->>'name'             as album_name,
-  payload->'item'->'album'->'images'->0->>'url' as album_art_url,
-  payload->'item'->'external_urls'->>'spotify'  as track_url,
-  (payload->>'is_playing')::boolean             as is_playing,
-  to_timestamp((payload->>'timestamp')::bigint / 1000) as played_at
-from raw.spotify_plays`;
+  r->>'name'                              as name,
+  r->>'description'                       as description,
+  r->>'language'                          as language,
+  coalesce((r->>'stargazers_count')::int, 0) as stars,
+  (r->>'pushed_at')::timestamptz          as pushed_at,
+  r->>'html_url'                          as url
+from stg_github g,
+     lateral jsonb_array_elements(g.payload->'repos') as r
+where coalesce((r->>'fork')::boolean, false) = false
+order by pushed_at desc`;
 
-const MART = `-- mart.spotify_now_playing  (latest row, tested)
-track_name    | Midnight City
-artist_name   | M83
-album_name    | Hurry Up, We're Dreaming
-is_playing    | false
-played_at     | 2026-07-30 21:06:40+00
-synced_at     | 2026-07-31 16:42:00+00`;
+const MART = `-- mart.github_repos  (query-ready, tested)
+name        | SQL-Challenges-and-learning
+description | SQL practice & solutions
+language    | TSQL
+stars       | 0
+pushed_at   | 2026-07-27 09:14:03+00`;
 
 const steps = [
-  { key: "extract", label: "1 · extract", desc: "Python calls GET /me/player and gets raw JSON", body: RAW, lang: "json" },
-  { key: "raw", label: "2 · land", desc: "Upsert the payload into raw.spotify_plays (untouched)", body: RAW_ROW, lang: "sql" },
-  { key: "staging", label: "3 · stage", desc: "dbt flattens JSON → typed columns, dedupes", body: STAGING, lang: "sql" },
-  { key: "mart", label: "4 · mart", desc: "dbt keeps the latest row; tests assert not_null", body: MART, lang: "sql" },
-  { key: "render", label: "5 · render", desc: "Next.js reads the mart row and paints the card", body: "", lang: "card" },
+  { key: "extract", label: "1 · extract", desc: "Python calls the GitHub REST API and gets raw repo JSON", body: RAW, lang: "json" },
+  { key: "raw", label: "2 · land", desc: "Upsert the whole payload into raw.github_stats (untouched)", body: RAW_ROW, lang: "sql" },
+  { key: "staging", label: "3 · transform", desc: "dbt explodes the repos array → typed columns, drops forks", body: STAGING, lang: "sql" },
+  { key: "mart", label: "4 · mart", desc: "dbt keeps non-fork repos, newest first; tests assert unique(name)", body: MART, lang: "sql" },
+  { key: "render", label: "5 · render", desc: "Next.js reads the mart row and paints the repo card", body: "", lang: "card" },
 ];
 
 export default function PipelineDemo() {
@@ -57,7 +54,6 @@ export default function PipelineDemo() {
 
   return (
     <div className="panel p-4">
-      {/* step controls */}
       <div className="mb-4 flex flex-wrap gap-1">
         {steps.map((s, i) => (
           <button
@@ -76,13 +72,13 @@ export default function PipelineDemo() {
 
       <div key={cur.key} className="animate-fadeUp">
         {cur.lang === "card" ? (
-          <div className="flex items-center gap-4 rounded border border-accent/40 bg-bg p-4">
-            <div className="grid h-16 w-16 place-items-center rounded bg-panel text-2xl">🎵</div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-muted">last played</div>
-              <div className="text-base font-bold">Midnight City</div>
-              <div className="text-xs text-muted">M83 — Hurry Up, We&apos;re Dreaming</div>
+          <div className="rounded border border-accent/40 bg-bg p-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-semibold">SQL-Challenges-and-learning</span>
+              <span className="text-[10px] text-muted">TSQL</span>
             </div>
+            <div className="mt-1 text-xs text-muted">SQL practice &amp; solutions</div>
+            <div className="mt-1 text-[10px] text-muted/60">pushed 27 Jul 2026</div>
           </div>
         ) : (
           <pre
@@ -96,21 +92,11 @@ export default function PipelineDemo() {
       </div>
 
       <div className="mt-4 flex items-center justify-between">
-        <button
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
-          disabled={step === 0}
-          className="text-xs text-muted disabled:opacity-30 hover:text-fg"
-        >
+        <button onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0} className="text-xs text-muted disabled:opacity-30 hover:text-fg">
           ← prev
         </button>
-        <div className="text-[10px] text-muted/60">
-          step {step + 1} / {steps.length}
-        </div>
-        <button
-          onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
-          disabled={step === steps.length - 1}
-          className="text-xs text-accent disabled:opacity-30"
-        >
+        <div className="text-[10px] text-muted/60">step {step + 1} / {steps.length}</div>
+        <button onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))} disabled={step === steps.length - 1} className="text-xs text-accent disabled:opacity-30">
           next →
         </button>
       </div>
