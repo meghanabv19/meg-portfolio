@@ -32,39 +32,10 @@ def main() -> None:
         {"username": username, "payload": {"badges": badges, "profile": profile}}
     ).execute()
 
+    # mart tables are owned by dbt (stg_hackerrank_badges -> mart.hackerrank_*).
     models = badges.get("models", [])
-    rows = [
-        {
-            "username": username,
-            "badge_name": m["badge_name"],
-            "badge_type": m.get("badge_type"),
-            "stars": m.get("stars", 0) or 0,
-            "max_stars": m.get("total_stars", 0) or 0,
-            "solved": m.get("solved", 0) or 0,
-            "points": round(m.get("current_points", 0) or 0, 1),
-        }
-        for m in models
-    ]
-    if rows:
-        sb.schema("mart").table("hackerrank_badges").upsert(
-            rows, on_conflict="username,badge_name"
-        ).execute()
-
-    top = max(models, key=lambda m: (m.get("stars", 0), m.get("current_points", 0)), default=None)
     total_stars = sum(m.get("stars", 0) or 0 for m in models)
-    sb.schema("mart").table("hackerrank_summary").upsert(
-        {
-            "username": username,
-            "name": profile.get("name"),
-            "level": profile.get("level", 0) or 0,
-            "country": profile.get("country"),
-            "total_badges": len(models),
-            "total_stars": total_stars,
-            "top_badge": top["badge_name"] if top else None,
-        }
-    ).execute()
-
-    log(f"hackerrank extract complete — {len(models)} badges, {total_stars} stars")
+    log(f"hackerrank extract complete — {len(models)} badges, {total_stars} stars landed in raw")
 
 
 if __name__ == "__main__":

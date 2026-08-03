@@ -57,23 +57,11 @@ def main() -> None:
     token = get_token()
     sb = supabase()
 
+    # mart tables are owned by dbt (stg_spotify_plays -> mart.spotify_now_playing).
     play = current_or_recent(token)
     if play:
         sb.schema("raw").table("spotify_plays").insert({"payload": play}).execute()
-        item = play["item"]
-        images = item.get("album", {}).get("images", [])
-        sb.schema("mart").table("spotify_now_playing").upsert(
-            {
-                "id": 1,
-                "is_playing": bool(play.get("is_playing")),
-                "track_name": item["name"],
-                "artist_name": item["artists"][0]["name"] if item.get("artists") else "",
-                "album_name": item.get("album", {}).get("name"),
-                "album_art_url": images[0]["url"] if images else None,
-                "track_url": item.get("external_urls", {}).get("spotify"),
-            }
-        ).execute()
-        log(f"now playing: {item['name']}")
+        log(f"now playing landed in raw: {play['item']['name']}")
 
     for term in TERMS:
         tracks = api_get("/me/top/tracks", token, {"time_range": term, "limit": 20})

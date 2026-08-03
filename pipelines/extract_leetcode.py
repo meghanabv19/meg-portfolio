@@ -54,32 +54,14 @@ def main() -> None:
         {"username": username, "payload": data}
     ).execute()
 
+    # mart tables are owned by dbt (stg_leetcode_stats -> mart.leetcode_summary).
     user = data.get("matchedUser") or {}
-    by_diff = {
-        row["difficulty"].lower(): row["count"]
-        for row in user.get("submitStatsGlobal", {}).get("acSubmissionNum", [])
-    }
-    recent = (data.get("recentAcSubmissionList") or [None])[0]
-    last_at = None
-    if recent and recent.get("timestamp"):
-        from datetime import datetime, timezone
-
-        last_at = datetime.fromtimestamp(int(recent["timestamp"]), tz=timezone.utc).isoformat()
-
-    sb.schema("mart").table("leetcode_summary").upsert(
-        {
-            "username": username,
-            "easy_solved": by_diff.get("easy", 0),
-            "medium_solved": by_diff.get("medium", 0),
-            "hard_solved": by_diff.get("hard", 0),
-            "total_solved": by_diff.get("all", 0),
-            "ranking": (user.get("profile") or {}).get("ranking", 0) or 0,
-            "streak": (user.get("userCalendar") or {}).get("streak", 0) or 0,
-            "last_submission_title": recent["title"] if recent else None,
-            "last_submission_at": last_at,
-        }
-    ).execute()
-    log(f"leetcode extract complete — {by_diff.get('all', 0)} solved")
+    total = next(
+        (r["count"] for r in user.get("submitStatsGlobal", {}).get("acSubmissionNum", [])
+         if r["difficulty"] == "All"),
+        0,
+    )
+    log(f"leetcode extract complete — {total} solved landed in raw")
 
 
 if __name__ == "__main__":
