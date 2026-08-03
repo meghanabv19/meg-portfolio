@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { TouristPlace } from "@/lib/types";
-import { SectionHeader, FallbackNote } from "../ui";
+import { FallbackNote } from "./ui";
 
 type W<T> = { data: T; usedFallback: boolean };
 
@@ -37,7 +37,8 @@ function loadScript(src: string, id: string): Promise<void> {
   });
 }
 
-export default function MapsSection({
+// Embeddable travel map (used inside the Personal section).
+export default function TravelMap({
   places,
   apiKey,
 }: {
@@ -95,22 +96,19 @@ export default function MapsSection({
           return marker;
         });
 
-        // MarkerClusterer (global from the unpkg script)
         if (window.markerClusterer?.MarkerClusterer) {
           new window.markerClusterer.MarkerClusterer({ map, markers });
         } else {
           markers.forEach((m: any) => m.setMap(map));
         }
 
-        // Auto-frame all pins.
         const bounds = new window.google.maps.LatLngBounds();
         data.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
         if (!bounds.isEmpty()) {
           map.fitBounds(bounds, 64);
-          const once = window.google.maps.event.addListenerOnce(map, "idle", () => {
-            if (map.getZoom() > 13) map.setZoom(13); // don't over-zoom on a tight cluster
+          window.google.maps.event.addListenerOnce(map, "idle", () => {
+            if (map.getZoom() > 13) map.setZoom(13);
           });
-          void once;
         }
 
         setStatus("ready");
@@ -124,31 +122,18 @@ export default function MapsSection({
     };
   }, [apiKey, data]);
 
-  const cities = Array.from(new Set(data.map((p) => p.city)));
-
   return (
-    <section>
-      <SectionHeader
-        title="maps"
-        subtitle={`${data.length} tourist places across ${cities.length} cities · reads mart.tourist_places`}
-      />
-
-      <FallbackNote show={places.usedFallback} source="Google Maps" />
+    <div>
+      <FallbackNote show={places.usedFallback} source="travel" />
 
       {apiKey && status !== "error" ? (
         <div
           ref={ref}
-          className="h-[420px] w-full overflow-hidden rounded-md border border-border bg-panel"
-          aria-label="Map of visited tourist places"
+          className="h-[380px] w-full overflow-hidden rounded-md border border-border bg-panel"
+          aria-label="Map of places visited"
         />
       ) : (
-        // Graceful fallback when no Maps API key is configured.
         <div className="rounded-md border border-border bg-panel p-4">
-          <div className="mb-3 text-xs text-muted">
-            {apiKey
-              ? "Map failed to load — showing place list."
-              : "Google Maps key not configured — showing place list. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to render the interactive dark map."}
-          </div>
           <ul className="grid gap-2 sm:grid-cols-2">
             {data.map((p) => (
               <li key={p.place_name} className="flex items-baseline justify-between gap-2 border-b border-border/60 pb-1 text-xs">
@@ -165,10 +150,10 @@ export default function MapsSection({
         </div>
       )}
 
-      <p className="mt-4 text-xs italic text-muted">
-        Only tourist places are plotted — museums, parks, landmarks and attractions. No home, no
-        commute, no daily locations. Raw location history is never stored on this server.
+      <p className="mt-3 text-[11px] italic text-muted">
+        Places I&apos;ve explored since moving to the UK — landmarks, parks and attractions only. No
+        home, commute or daily locations; raw location history is never stored on this server.
       </p>
-    </section>
+    </div>
   );
 }

@@ -64,13 +64,14 @@ export const mockGithubRepos: GithubRepo[] = [
 ];
 
 export const mockBooks: Book[] = [
-  { id: 1, title: "Deep Work", author: "Cal Newport", status: "reading", rating: null, note: null, sort_order: 1 },
-  { id: 2, title: "Why We Sleep", author: "Matthew Walker", status: "reading", rating: null, note: null, sort_order: 2 },
-  { id: 3, title: "The Telomere Effect", author: "Blackburn & Epel", status: "reading", rating: null, note: null, sort_order: 3 },
-  { id: 4, title: "White Nights", author: "Fyodor Dostoevsky", status: "reading", rating: null, note: null, sort_order: 4 },
-  { id: 5, title: "Metamorphosis", author: "Franz Kafka", status: "reading", rating: null, note: null, sort_order: 5 },
-  { id: 6, title: "Tuesdays with Morrie", author: "Mitch Albom", status: "reading", rating: null, note: null, sort_order: 6 },
-  { id: 7, title: "And Then There Were None", author: "Agatha Christie", status: "reading", rating: null, note: null, sort_order: 7 },
+  { id: 1, title: "The Palace of Illusions", author: "Chitra Banerjee Divakaruni", status: "reading", rating: null, note: null, sort_order: 1 },
+  { id: 2, title: "Deep Work", author: "Cal Newport", status: "read", rating: null, note: null, sort_order: 2 },
+  { id: 3, title: "Why We Sleep", author: "Matthew Walker", status: "read", rating: null, note: null, sort_order: 3 },
+  { id: 4, title: "The Telomere Effect", author: "Blackburn & Epel", status: "read", rating: null, note: null, sort_order: 4 },
+  { id: 5, title: "White Nights", author: "Fyodor Dostoevsky", status: "read", rating: null, note: null, sort_order: 5 },
+  { id: 6, title: "Metamorphosis", author: "Franz Kafka", status: "read", rating: null, note: null, sort_order: 6 },
+  { id: 7, title: "Tuesdays with Morrie", author: "Mitch Albom", status: "read", rating: null, note: null, sort_order: 7 },
+  { id: 8, title: "And Then There Were None", author: "Agatha Christie", status: "read", rating: null, note: null, sort_order: 8 },
 ];
 
 export const mockTouristPlaces: TouristPlace[] = [

@@ -7,7 +7,6 @@ import Splash from "./Splash";
 import About from "./sections/About";
 import CodingSection from "./sections/Coding";
 import Personal from "./sections/Personal";
-import MapsSection from "./sections/Maps";
 import Connect from "./sections/Connect";
 import Architecture from "./sections/Architecture";
 import type {
@@ -39,8 +38,7 @@ export interface SiteData {
 export const SECTIONS = [
   { id: "about", label: "About me", hint: "start here" },
   { id: "coding", label: "Coding", hint: "leetcode · hackerrank · github" },
-  { id: "personal", label: "Personal", hint: "reading · running · hiking" },
-  { id: "maps", label: "Maps", hint: "travel" },
+  { id: "personal", label: "Personal", hint: "reading · travel · interests" },
   { id: "connect", label: "Connect", hint: "let's talk" },
   { id: "architecture", label: "Architecture", hint: "how this works" },
 ] as const;
@@ -70,7 +68,7 @@ export default function AppShell({ data }: { data: SiteData }) {
       } else if (e.key === "ArrowUp" || e.key === "k") {
         e.preventDefault();
         go(-1);
-      } else if (/^[1-6]$/.test(e.key)) {
+      } else if (/^[1-5]$/.test(e.key)) {
         setActive(SECTIONS[Number(e.key) - 1].id);
       }
     };
@@ -97,8 +95,9 @@ export default function AppShell({ data }: { data: SiteData }) {
                 repos={data.githubRepos}
               />
             )}
-            {active === "personal" && <Personal books={data.books} />}
-            {active === "maps" && <MapsSection places={data.places} apiKey={data.mapsKey} />}
+            {active === "personal" && (
+              <Personal books={data.books} places={data.places} mapsKey={data.mapsKey} />
+            )}
             {active === "connect" && (
               <Connect calendarUrl={data.calendarUrl} bookingUrl={data.bookingUrl} />
             )}

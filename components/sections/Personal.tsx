@@ -1,15 +1,17 @@
 "use client";
 
-import type { Book } from "@/lib/types";
+import type { Book, TouristPlace } from "@/lib/types";
 import { SectionHeader, FallbackNote } from "../ui";
+import TravelMap from "../TravelMap";
 
 type W<T> = { data: T; usedFallback: boolean };
 
 const HOBBIES = [
-  { icon: "📚", name: "Reading", note: "fiction, DE, and the odd sleep-science book" },
-  { icon: "🏃", name: "Running", note: "building a habit around London" },
-  { icon: "🧠", name: "Learning new things", note: "always upskilling — currently AWS + dbt" },
-  { icon: "🥾", name: "Hiking", note: "weekends outdoors when the weather allows" },
+  { icon: "📚", name: "Reading", note: "fiction and non-fiction — Dostoevsky to sleep science" },
+  { icon: "🏃", name: "Running", note: "regular runs around London" },
+  { icon: "🥾", name: "Hiking", note: "weekend trails and the outdoors" },
+  { icon: "🗺️", name: "Travel", note: "exploring the UK and beyond" },
+  { icon: "🎓", name: "Continuous learning", note: "AWS certifications, dbt and the modern data stack" },
 ];
 
 const STATUS_LABEL: Record<Book["status"], string> = {
@@ -18,20 +20,24 @@ const STATUS_LABEL: Record<Book["status"], string> = {
   want: "Want to read",
 };
 
-export default function Personal({ books }: { books: W<Book[] > }) {
+export default function Personal({
+  books,
+  places,
+  mapsKey,
+}: {
+  books: W<Book[]>;
+  places: W<TouristPlace[]>;
+  mapsKey: string;
+}) {
   const groups: Book["status"][] = ["reading", "read", "want"];
   const byStatus = (st: Book["status"]) => books.data.filter((b) => b.status === st);
+  const cities = Array.from(new Set(places.data.map((p) => p.city)));
 
   return (
     <section>
-      <SectionHeader
-        title="personal"
-        subtitle="Life outside the pipelines"
-      />
+      <SectionHeader title="personal" subtitle="Life outside the pipelines" />
 
-      <FallbackNote show={books.usedFallback} source="Reading list" />
-
-      {/* hobbies */}
+      {/* interests */}
       <div className="grid gap-3 sm:grid-cols-2">
         {HOBBIES.map((h) => (
           <div key={h.name} className="panel flex items-start gap-3 px-4 py-3">
@@ -44,11 +50,24 @@ export default function Personal({ books }: { books: W<Book[] > }) {
         ))}
       </div>
 
+      {/* travel */}
+      <div className="mt-12 flex items-baseline justify-between">
+        <h3 className="label">travel 🗺️</h3>
+        <span className="text-[10px] text-muted/60">
+          {places.data.length} places · {cities.length} cities
+        </span>
+      </div>
+      <div className="mt-3">
+        <TravelMap places={places} apiKey={mapsKey} />
+      </div>
+
       {/* reading list */}
       <div className="mt-12 flex items-baseline justify-between">
         <h3 className="label">reading list 📖</h3>
         <span className="text-[10px] text-muted/60">self-curated</span>
       </div>
+
+      <FallbackNote show={books.usedFallback} source="Reading list" />
 
       <div className="mt-3 space-y-6">
         {groups.map((st) => {

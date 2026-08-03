@@ -30,8 +30,8 @@ export default function Architecture({ repoUrl }: { repoUrl: string }) {
           I wanted the portfolio itself to be the proof of work. So every widget you see is fed by a
           real pipeline that mirrors how I&apos;d build one at work: an orchestrator on a schedule, an
           idempotent extract, a raw landing zone, versioned dbt transforms with tests, and a thin
-          read layer. Same shape as an enterprise migration — just smaller, and about my music and
-          runs instead of SAP material masters.
+          read layer. Same shape as an enterprise migration — just smaller, and about my coding
+          stats, GitHub and travels instead of SAP material masters.
         </p>
       </div>
 

@@ -101,7 +101,7 @@ export default function MigrationFlow() {
 
       <p className="mt-3 text-[11px] text-muted/70">
         The same shape as this website&apos;s own pipeline — extract, land, transform, test, publish —
-        just at enterprise scale, and with millions of records instead of my playlists.
+        just at enterprise scale, and with millions of records instead of my coding stats.
       </p>
     </div>
   );
