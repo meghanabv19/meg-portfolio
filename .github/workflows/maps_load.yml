@@ -27,7 +27,7 @@ jobs:
       - name: Install deps
         run: |
           pip install -r pipelines/requirements.txt
-          pip install dbt-postgres==1.8.2
+          pip install "dbt-core==1.9.10" "dbt-postgres==1.9.1"
 
       - name: Download Takeout artifact (if provided)
         uses: actions/download-artifact@v4
