@@ -85,6 +85,20 @@ models:
       - name: stars
         tests: [not_null]
 
+  - name: mart_github_summary
+    description: "One GitHub summary row per user."
+    columns:
+      - name: username
+        tests: [not_null, unique]
+      - name: public_repos
+        tests: [not_null]
+
+  - name: mart_github_repos
+    description: "Non-fork repos, newest push first."
+    columns:
+      - name: name
+        tests: [not_null, unique]
+
   - name: mart_tourist_places
     description: "Deduped tourist places for the map."
     tests:

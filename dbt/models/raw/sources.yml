@@ -11,4 +11,5 @@ sources:
       - name: strava_activities
       - name: leetcode_stats
       - name: hackerrank_badges
+      - name: github_stats
       - name: location_visits

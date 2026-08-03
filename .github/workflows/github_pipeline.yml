@@ -1,0 +1,51 @@
+name: github_pipeline
+
+on:
+  schedule:
+    - cron: "30 0 * * *" # daily at 00:30 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: github-stats
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install deps
+        run: |
+          pip install -r pipelines/requirements.txt
+          pip install "dbt-core==1.9.10" "dbt-postgres==1.9.1"
+
+      - name: Extract GitHub
+        working-directory: pipelines
+        env:
+          GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python extract_github.py
+
+      - name: dbt build (github models)
+        working-directory: dbt
+        env:
+          SUPABASE_DB_HOST: ${{ secrets.SUPABASE_DB_HOST }}
+          SUPABASE_DB_PORT: ${{ secrets.SUPABASE_DB_PORT }}
+          SUPABASE_DB_USER: ${{ secrets.SUPABASE_DB_USER }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_DB_NAME: ${{ secrets.SUPABASE_DB_NAME }}
+        run: |
+          dbt deps
+          dbt build --profiles-dir . --select stg_github+
+
+      - name: Report
+        if: always()
+        run: echo "github_pipeline finished with status=${{ job.status }}"
