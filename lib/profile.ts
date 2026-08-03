@@ -9,7 +9,7 @@ export const profile = {
   summary:
     "7 years designing and delivering enterprise ETL/ELT pipelines, SQL data-quality frameworks and large-scale SAP data migrations.",
   location: "London, United Kingdom",
-  workRight: "Full UK right to work — no sponsorship needed.",
+  workRight: "Full right to work in the UK — no sponsorship needed.",
   links: {
     email: "meghanalondon1@gmail.com",
     phone: "+44 7343 059777",
