@@ -7,7 +7,7 @@ export const profile = {
   focus: "SQL · ETL · Data Migration",
   tagline: "Data pipelines that ship — and stay clean.",
   summary:
-    "7+ years designing and delivering enterprise ETL/ELT pipelines, SQL data-quality frameworks and large-scale SAP data migrations.",
+    "7 years designing and delivering enterprise ETL/ELT pipelines, SQL data-quality frameworks and large-scale SAP data migrations.",
   location: "London, United Kingdom",
   workRight: "Full UK right to work — no sponsorship needed.",
   links: {
